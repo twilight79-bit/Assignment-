@@ -1,1 +1,256 @@
-# Assignment-
+# 서술형 연습 프로그램#
+
+##키워드 및 시험 정보를 입력하고 이에 기초해 생성된 문제를 풀어보는 사이트##
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>서술형 시험 마스터 | 모의고사 및 자동 채점</title>
+  <!-- Google Fonts & Font Awesome Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Main Header -->
+    <header class="app-header">
+      <div class="logo">
+        <span class="logo-icon">✍️</span>
+        <h1>서술형 시험 마스터</h1>
+      </div>
+      <!-- Progress Stepper -->
+      <div class="stepper" id="stepper">
+        <div class="step active" data-step="1">
+          <div class="step-num">1</div>
+          <div class="step-label">기본 정보</div>
+        </div>
+        <div class="step-connector"></div>
+        <div class="step" data-step="2">
+          <div class="step-num">2</div>
+          <div class="step-label">문항 설정</div>
+        </div>
+        <div class="step-connector"></div>
+        <div class="step" data-step="3">
+          <div class="step-num">3</div>
+          <div class="step-label">문제 생성</div>
+        </div>
+        <div class="step-connector"></div>
+        <div class="step" data-step="4">
+          <div class="step-num">4</div>
+          <div class="step-label">시험 진행</div>
+        </div>
+        <div class="step-connector"></div>
+        <div class="step" data-step="5">
+          <div class="step-num">5</div>
+          <div class="step-label">채점 결과</div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="app-content">
+      
+      <!-- STEP 1: Basic Exam Info Input -->
+      <section id="step1-screen" class="screen-section">
+        <div class="card glass">
+          <div class="card-header">
+            <h2>Step 1. 시험 기본 정보 및 키워드 입력</h2>
+            <p class="subtitle">과목명, 시험 시간 및 시험 범위의 키워드와 핵심 내용을 등록해 주세요.</p>
+          </div>
+          <div class="card-body">
+            <div class="form-group row-group">
+              <div class="input-wrapper">
+                <label for="subject-name">과목명</label>
+                <input type="text" id="subject-name" placeholder="예: 서양 근대 철학, 사회학 개론" required>
+              </div>
+              <div class="input-wrapper">
+                <label for="exam-duration">시험 시간 (분)</label>
+                <div class="number-input-control">
+                  <button type="button" class="btn-num-adjust" onclick="adjustTime(-5)">-5</button>
+                  <input type="number" id="exam-duration" value="50" min="1" max="180" required>
+                  <button type="button" class="btn-num-adjust" onclick="adjustTime(5)">+5</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="keyword-section">
+              <div class="keyword-section-header">
+                <h3>키워드 및 핵심 내용 사전 (Dictionary)</h3>
+                <span class="badge info-badge">시험 문제 출제 및 채점 기준의 뼈대가 됩니다.</span>
+              </div>
+              
+              <div class="keyword-list" id="keyword-list-container">
+                <!-- Dynamic Keyword Rows will be inserted here -->
+              </div>
+              
+              <button type="button" class="btn btn-secondary btn-icon" id="btn-add-keyword">
+                <span>➕</span> 키워드 추가
+              </button>
+            </div>
+          </div>
+          <div class="card-footer">
+            <button type="button" class="btn btn-primary" id="btn-goto-step2">다음 단계로 이동 ➡️</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- STEP 2: Question Config (Num of Questions & Individual Settings) -->
+      <section id="step2-screen" class="screen-section hidden">
+        <div class="card glass">
+          <div class="card-header">
+            <h2>Step 2. 시험 문항 수 및 세부 설정</h2>
+            <p class="subtitle">출제할 문항 수를 결정하고 각 문항별 배점과 목표 글자수 분량을 지정하세요.</p>
+          </div>
+          <div class="card-body">
+            <div class="form-group">
+              <label for="question-count">총 문항 수</label>
+              <div class="number-input-control width-small">
+                <button type="button" class="btn-num-adjust" onclick="adjustQuestionCount(-1)">-</button>
+                <input type="number" id="question-count" value="3" min="1" max="10" required readonly>
+                <button type="button" class="btn-num-adjust" onclick="adjustQuestionCount(1)">+</button>
+              </div>
+            </div>
+
+            <div class="question-config-list" id="question-config-container">
+              <!-- Dynamically generated question config inputs -->
+            </div>
+            
+            <div class="info-box glass-info">
+              <p>💡 <strong>배점 안내:</strong> 문항별 배점을 비워둘 경우, 100점을 기준으로 균등하게 자동 분배됩니다.</p>
+            </div>
+          </div>
+          <div class="card-footer button-group">
+            <button type="button" class="btn btn-secondary" id="btn-back-to-step1">⬅️ 이전 단계</button>
+            <button type="button" class="btn btn-primary" id="btn-goto-step3">문제 생성하기 ⚡</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- STEP 3: Question Review & Verification -->
+      <section id="step3-screen" class="screen-section hidden">
+        <div class="card glass">
+          <div class="card-header">
+            <h2>Step 3. 생성된 문제 및 채점 키워드 검토</h2>
+            <p class="subtitle">입력된 키워드 사전을 토대로 문제가 자동 생성되었습니다. 질문을 직접 편집하거나 채점 키워드를 조정해 보세요.</p>
+          </div>
+          <div class="card-body">
+            <div class="generated-questions-list" id="generated-questions-container">
+              <!-- Dynamically generated questions and keyword checkboxes -->
+            </div>
+          </div>
+          <div class="card-footer button-group">
+            <button type="button" class="btn btn-secondary" id="btn-back-to-step2">⬅️ 이전 단계</button>
+            <button type="button" class="btn btn-accent btn-large" id="btn-start-exam">모의시험 시작! 🚀</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- STEP 4: Live Exam Simulator -->
+      <section id="step4-screen" class="screen-section hidden">
+        <!-- Sticky Timer Banner -->
+        <div class="sticky-timer-bar glass">
+          <div class="timer-subject-info">
+            <span class="exam-subject-badge" id="exam-current-subject">서양 근대 철학</span>
+            <span class="exam-progress-text" id="exam-progress-counter">0 / 3 문항 작성중</span>
+          </div>
+          <div class="timer-countdown-display" id="timer-display">
+            <span class="timer-icon">⏳</span>
+            <span class="timer-digits" id="timer-digits">50:00</span>
+          </div>
+          <div class="timer-progress-container">
+            <div class="timer-progress-bar" id="timer-progress-bar" style="width: 100%;"></div>
+          </div>
+        </div>
+
+        <div class="exam-sheet-container">
+          <div id="exam-questions-sheet">
+            <!-- Questions to answer -->
+          </div>
+          
+          <div class="exam-actions">
+            <button type="button" class="btn btn-accent btn-large btn-full" id="btn-submit-exam">답안 제출 및 채점하기 📋</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- STEP 5: Exam Report & Feedback Dashboard -->
+      <section id="step5-screen" class="screen-section hidden">
+        <!-- Summary Dashboard Card -->
+        <div class="summary-dashboard-grid">
+          <div class="card glass score-card">
+            <div class="card-body centered">
+              <span class="summary-label">최종 점수</span>
+              <div class="score-display">
+                <span class="score-num" id="total-score-obtained">85</span>
+                <span class="score-slash">/</span>
+                <span class="score-total">100</span>
+              </div>
+              <div class="grade-badge" id="total-grade-badge">우수 (A)</div>
+            </div>
+          </div>
+
+          <div class="card glass stats-card">
+            <div class="card-header">
+              <h3>종합 분석 리포트</h3>
+            </div>
+            <div class="card-body">
+              <div class="stat-row">
+                <span class="stat-label">시험 과목</span>
+                <span class="stat-value" id="report-subject">서양 근대 철학</span>
+              </div>
+              <div class="stat-row">
+                <span class="stat-label">소요 시간</span>
+                <span class="stat-value" id="report-time-spent">12분 34초 / 50분</span>
+              </div>
+              <div class="stat-row">
+                <span class="stat-label">키워드 매칭률</span>
+                <span class="stat-value" id="report-keyword-ratio">75% (9/12개 포함)</span>
+              </div>
+              <div class="stat-row">
+                <span class="stat-label">글자수 충족도</span>
+                <span class="stat-value" id="report-length-compliance">3/3개 충족</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Detailed Question Grading Cards -->
+        <div class="detailed-grading-section">
+          <h3>문항별 상세 채점 결과</h3>
+          <div id="detailed-grading-container">
+            <!-- Question grading cards will be rendered here -->
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="report-actions button-group">
+          <button type="button" class="btn btn-secondary" id="btn-restart-exam">동일한 설정으로 다시 응시 🔄</button>
+          <button type="button" class="btn btn-primary" id="btn-new-exam">새 시험 만들기 🆕</button>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="app-footer-info">
+      <p>© 2026 서술형 시험 마스터. 로그인 없이 오프라인으로 안전하게 이용하는 학생 전용 연습용 대시보드.</p>
+    </footer>
+  </div>
+
+  <!-- Time's Up Modal/Overlay -->
+  <div class="modal-overlay hidden" id="times-up-modal">
+    <div class="modal-content glass animate-scale">
+      <div class="modal-icon">🚨</div>
+      <h2>시험 종료</h2>
+      <p>제한 시간이 만료되었습니다. 작성하던 답안이 자동으로 제출되고 채점이 진행됩니다.</p>
+      <button type="button" class="btn btn-accent" id="btn-close-modal-and-grade">채점 결과 확인하기</button>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
